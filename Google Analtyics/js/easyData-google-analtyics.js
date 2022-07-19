@@ -2,10 +2,18 @@
 
 const GA_SCOPE = "https://www.googleapis.com/auth/analytics.readonly";
 const GA_API_URL = "https://analyticsdata.googleapis.com/$discovery/rest?version=v1beta";
+const GA_PLUGIN_NAME = "<the name of OAUTH 2 when you created>";
 
 gapi.load("client:auth2", function () {
-  gapi.auth2.init({ client_id: CLIENT_ID }).then(() => document.dispatchEvent(new Event('gapi-loaded')));
+  gapi.auth2.init({ client_id: CLIENT_ID,plugin_name: GA_PLUGIN_NAME }).then(() => document.dispatchEvent(new Event('gapi-loaded')));
 });
+
+function signIn(scope = GA_SCOPE,plugin_name= GA_PLUGIN_NAME) {
+  return gapi.auth2.getAuthInstance().signIn({ scope,plugin_name }).then(() => {
+    setCookie('guser-loggedin', 'true', 1);
+    location.reload();
+  }, (e) => console.error(e));
+}
 
 function signIn(scope = GA_SCOPE) {
   return gapi.auth2.getAuthInstance().signIn({ scope }).then(() => {
